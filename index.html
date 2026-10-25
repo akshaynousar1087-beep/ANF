@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akshay Noushar Films (ANF) · Official Flagship Platform</title>
+  <meta name="description" content="Official cinematic platform of filmmaker and creative director Akshay Noushar. Narrative cinema, commercial productions, and creative technology." />
+  
+  <!-- Favicon & Meta -->
+  <meta name="theme-color" content="#0b0b0c" />
+  
+  <!-- Google Fonts: Montserrat & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Montserrat', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              orange: '#F25623',
+              dark: '#0b0b0c',
+              matte: '#171717',
+              surface: '#121214',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & ReactDOM via CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone for In-Browser JSX Compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0b0c; }
+    ::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #F25623; }
+    
+    /* Subtle Grain Texture */
+    .bg-grain {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="bg-[#0b0b0c] text-neutral-100 selection:bg-[#F25623] selection:text-white antialiased">
+  
+  <div id="root"></div>
+
+  <!-- React Application Logic -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // --- OFFICIAL UNEDITED LOGO REPOSITORY ---
+    // Direct link to your Google Drive master assets
+    const OFFICIAL_LOGOS = {
+      anf: {
+        name: "Akshay Noushar Films",
+        id: "1wiGp-bt9WL4E_aTI0HV_uOZ8AoN34tNu",
+        filename: "Unknown-2.jpeg",
+        fallback: "ANF"
+      },
+      fff: {
+        name: "Flicker Frame Films",
+        id: "1kPJip5LrizEKp9E6M1P3yRaY1piy4RVo",
+        filename: "IMG_0717.PNG",
+        fallback: "FLICKER FRAME FILMS"
+      },
+      obscura: {
+        name: "OBSCURA / The Viewfinder",
+        id: "1FXukULZKz-IuRcLw9TAGX-Pn0OQVZyyp",
+        filename: "EFAC01AB-96CD-48E4-A737-ED702FA51190.jpg",
+        fallback: "OBSCURA"
+      },
+      daynight: {
+        name: "DayNight Media",
+        id: "1a4-R6USfR7E-yAL6ir4RCp-po5Gi1hGh",
+        filename: "0d80cdfe-5061-4a52-9a19-e54a0672f856.JPG",
+        fallback: "DNM"
+      },
+      flickus: {
+        name: "FlickUs Creatives",
+        id: "1A0SYFYIapYnxHssxlqFgsN8M_A9lJ3P4",
+        filename: "D0EC5AE8-189D-41B7-9A54-63E95946B2BD.png",
+        fallback: "FLICKUS"
+      },
+      cp: {
+        name: "Cinema Paradise",
+        id: "17vzb9YZ-R8FPqK2uvTx9GQXpubjyfLiI",
+        filename: "blk n whte.jpg",
+        fallback: "CINEMA PARADISE"
+      },
+      eleven: {
+        name: "Eleven Story",
+        id: "1hXKUOrCaGko2PA1ZDnLbUTBy25MUWIYK",
+        filename: "D2E9FC3C-8BF5-45D3-AB69-3FEFD4C3AA93.png",
+        fallback: "ELEVEN STORY"
+      }
+    };
+
+    // Official Logo Direct Renderer
+    const OriginalLogo = ({ id, className = "h-16", alt }) => {
+      const asset = OFFICIAL_LOGOS[id];
+      const [srcIndex, setSrcIndex] = useState(0);
+      const [hasError, setHasError] = useState(false);
+
+      if (!asset?.id) {
+        return (
+          <div className={`flex items-center justify-center p-2 text-center font-mono font-bold text-xs uppercase ${className}`}>
+            {asset?.name || alt}
+          </div>
+        );
+      }
+
+      const sources = [
+        `https://lh3.googleusercontent.com/d/${asset.id}`,
+        `https://drive.google.com/thumbnail?id=${asset.id}&sz=w1000`
+      ];
+
+      if (hasError) {
+        return (
+          <div className={`flex flex-col items-center justify-center p-2 text-center ${className}`}>
+            <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-300">{asset.name}</span>
+            <span className="text-[9px] font-mono text-[#F25623] mt-0.5">{asset.filename}</span>
+            <a 
+              href={`https://drive.google.com/file/d/${asset.id}/view`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[9px] font-mono text-neutral-400 underline mt-0.5 hover:text-white"
+            >
+              Open File ↗
+            </a>
+          </div>
+        );
+      }
+
+      return (
+        <img 
+          src={sources[srcIndex]} 
+          alt={alt || asset.name}
+          onError={() => {
+            if (srcIndex < sources.length - 1) {
+              setSrcIndex(srcIndex + 1);
+            } else {
+              setHasError(true);
+            }
+          }}
+          className={`max-w-full object-contain ${className}`}
+          loading="lazy"
+        />
+      );
+    };
+
+    // Legal Credentials & Master Data
+    const LEGAL_DATA = {
+      name: "Akshay Noushar",
+      banner: "AKSHAY NOUSHAR FILMS (ANF)",
+      msme: "UDYAM-KL-06-0031882",
+      gst: "32DJEPA1248A1Z6",
+      address: "Abismay Elysium, Kilikolloor, Kollam, Kerala - 691004",
+      email: "hello@flickus.in",
+      altEmail: "akshaynousharfilms@gmail.com",
+      phone: "+91 9562801087",
+      whatsapp: "919562801087"
+    };
+
+    // Viewfinder Archive Doctrines
+    const DOCTRINE_PRINCIPLES = [
+      {
+        num: "001",
+        title: "Never create only for today.",
+        subtitle: "Create something that becomes part of the final system.",
+        meaning: "Every page, design, document, system, idea, and decision must belong to something bigger than the present moment. Temporary solutions should not become permanent weaknesses. Every creation carries the discipline of the final vision."
+      },
+      {
+        num: "002",
+        title: "Availability creates creativity.",
+        subtitle: "Time reveals possibility.",
+        meaning: "Creativity becomes practical only when available time is understood. Time decides what can be created, how deeply it can be shaped, and how much effort can be committed without compromising consistency."
+      },
+      {
+        num: "003",
+        title: "The final frame decides the first decision.",
+        subtitle: "Begin with the finished vision.",
+        meaning: "A project should not begin from random movement. The finished visual and emotional result must be conceptualized first. When the end is locked, the first decision becomes purposeful and directed."
+      },
+      {
+        num: "004",
+        title: "Build from the final frame.",
+        subtitle: "The end result must guide every output.",
+        meaning: "A film, website, brand book, or post workflow should not be built as disconnected pieces. The completed screen vision guides the structural architecture so every cut and pixel belongs together."
+      },
+      {
+        num: "005",
+        title: "A system remembers what motivation forgets.",
+        subtitle: "Motivation is temporary. Systems continue.",
+        meaning: "Motivation is emotional and fragile. A system is structural and repeatable. When production pressure peaks, the system preserves directorial intent, maintains quality, and protects the work."
+      },
+      {
+        num: "006",
+        title: "Measure time first. Build second.",
+        subtitle: "Time is the first material.",
+        meaning: "Before planning, filming, lighting, writing, or grading, the available time must be calculated. When time is calibrated, work can be prioritized, executed with precision, and protected from waste."
+      },
+      {
+        num: "007",
+        title: "Momentum is earned by finishing.",
+        subtitle: "Finishing is the real source of momentum.",
+        meaning: "Starting gives excitement, but finishing gives proof. Real momentum begins when a sequence is cut, graded, approved, and delivered. Completion turns vision into authority."
+      },
+      {
+        num: "008",
+        title: "Every completed module reduces the weight of tomorrow.",
+        subtitle: "Modular execution builds future velocity.",
+        meaning: "Each completed frame, script scene, colour profile, or pipeline process removes future friction. Completion creates mental clarity and empowers bolder creative decisions."
+      }
+    ];
+
+    // Seven Ecosystem Entities
+    const ECOSYSTEM_ENTITIES = [
+      {
+        id: "anf",
+        tag: "FLAGSHIP CINEMA",
+        name: "Akshay Noushar Films",
+        role: "Auteur Cinema & Narrative IP",
+        desc: "Independent films, stylized Malayalam originals, high-concept narrative shorts, and cinematic screenplays rooted in uncompromising atmosphere and visual rhythm.",
+        highlight: "Cinema Label · 2.39:1 Scope · Festival & Theatrical Slate",
+        accent: "#F25623",
+        nic: "NIC 59112 · 59121"
+      },
+      {
+        id: "obscura",
+        tag: "PARENT VISION",
+        name: "OBSCURA / The Viewfinder",
+        role: "Core Philosophy & Personal Identity",
+        desc: "The overarching creative doctrine inspired by Camera Obscura. Home of The Viewfinder Archive, authorial writings, and operating principles.",
+        highlight: "The Viewfinder Archive · Creative Doctrine 001",
+        accent: "#ffaa00",
+        nic: "Parent Vision"
+      },
+      {
+        id: "daynight",
+        tag: "COMMERCIAL ARM",
+        name: "DayNight Media (DNM)",
+        role: "Ad Films & Commercial Media",
+        desc: "B2B commercial productions, brand films, luxury event storytelling, and high-impact digital campaigns with commercial clarity and production velocity.",
+        highlight: "GST Registered · Regular B2B Entity · Commercial Production",
+        accent: "#00a3b4",
+        nic: "GST: 32DJEPA1248A1Z6"
+      },
+      {
+        id: "flickus",
+        tag: "CREATIVE TECH",
+        name: "FlickUs Creatives",
+        role: "Digital Experiences & Web Platforms",
+        desc: "Full-stack digital brand engineering, client-experience portals, creative web applications, and tech-driven visual marketing ecosystems.",
+        highlight: "flickus.in · Creative Tech Retainers · Cloud Platforms",
+        accent: "#e63946",
+        nic: "NIC 62012"
+      },
+      {
+        id: "fff",
+        tag: "PRODUCTION LAB",
+        name: "Flicker Frame Films (F3)",
+        role: "Post-Production Lab & Studio Floor",
+        desc: "Dedicated editing suite, DaVinci Resolve color grading, multi-cam podcast floor operations, and experimental visual incubations.",
+        highlight: "Post-Production · Studio Floor Operations · DIT Workflows",
+        accent: "#DE9B16",
+        nic: "NIC 59121"
+      },
+      {
+        id: "cp",
+        tag: "EXHIBITION & RIGHTS",
+        name: "Cinema Paradise",
+        role: "Distribution & Screening Curation",
+        desc: "Indie screening circuits, film projection, master rights acquisition, and communal cinema culture established since 2022.",
+        highlight: "NIC 59131 & 59141 · Motion Picture Projection & Distribution",
+        accent: "#b93412",
+        nic: "Since 2022 · 59131"
+      },
+      {
+        id: "eleven",
+        tag: "NARRATIVE CO-LABEL",
+        name: "Eleven Story",
+        role: "Curated Episodic & Story Incubations",
+        desc: "Specialized narrative label focusing on episodic web series, long-form human documentary profiles, and script development rooms.",
+        highlight: "Story Development · Co-Production Slate",
+        accent: "#ffffff",
+        nic: "Narrative IP"
+      }
+    ];
+
+    // Portfolio Archive Data
+    const PROJECTS_DATA = [
+      {
+        id: 1,
+        title: "NIHAA",
+        category: "cinema",
+        aspect: "2.39:1 Anamorphic Scope",
+        year: "2026",
+        role: "Screenplay · Direction · Cinematography · Post-Grade",
+        entity: "Akshay Noushar Films (ANF)",
+        logline: "In the rain-drenched coastal corridor of Kollam, a quiet night becomes a study in tension, memory, and unresolved guilt.",
+        camera: "Custom Rig · Vintage Optical Kit",
+        color: "DaVinci Resolve Studio (10-bit Rec.709 DCI-P3 Emulation)",
+        runtime: "16 min 40 sec",
+        previewImage: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80",
+        badge: "Cinema Original"
+      },
+      {
+        id: 2,
+        title: "The Elevate Suite",
+        category: "commercial",
+        aspect: "16:9 UHD Broadcast",
+        year: "2026",
+        role: "Creative Direction · Production Design · Sound",
+        entity: "DayNight Media",
+        logline: "High-octane commercial brand campaign featuring moody contrasts, precision lighting, and dynamic product choreography.",
+        camera: "Cinema 4K Prime Package",
+        color: "Commercial Punch · High Contrast Specular",
+        runtime: "60s Master TVC + 3x 15s Cutdowns",
+        previewImage: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
+        badge: "Brand Campaign"
+      },
+      {
+        id: 3,
+        title: "Tropical Sanctuary: Spatial Tour",
+        category: "commercial",
+        aspect: "16:9 Architectural",
+        year: "2025-26",
+        role: "Director of Photography · Ambient Sound Design",
+        entity: "DayNight Media x FlickUs",
+        logline: "An immersive exploration of contemporary Kerala residential architecture, captured through natural light gradients and deliberate tracking shots.",
+        camera: "Ultra-Wide Prime · Balanced Gimbal System",
+        color: "Earthy Warmth · Deep Shadow Rolloff",
+        runtime: "04 min 12 sec",
+        previewImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        badge: "Architectural Film"
+      },
+      {
+        id: 4,
+        title: "FlickUs Onam Fine Art Portraits",
+        category: "stills",
+        aspect: "4:5 Medium Format Style",
+        year: "2025",
+        role: "Creative Concept · Lighting Rig · Retouching System",
+        entity: "FlickUs Editorial",
+        logline: "A reinterpretation of traditional celebratory aesthetics into minimalist, high-contrast studio portraiture with rich fabric textures.",
+        camera: "50MP Sensor · Large Soft Key & Rim Grid",
+        color: "Warm Golden Ochre & Deep Obsidian",
+        runtime: "24 Curated Museum Plates",
+        previewImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80",
+        badge: "Fine Art Series"
+      },
+      {
+        id: 5,
+        title: "Kinetic Drift: Vertical Motion Series",
+        category: "reels",
+        aspect: "9:16 Vertical Native",
+        year: "2026",
+        role: "Direction · Fast-Paced Edit · Micro-Sound Design",
+        entity: "Flicker Frame Films Lab",
+        logline: "Experimental short-form narratives crafted specifically for thumb-stopping mobile immersion without sacrificing cinematic lighting.",
+        camera: "Vertical Cage Rig · 24mm Prime",
+        color: "Neon Shadow Splicing · Punchy Gamut",
+        runtime: "8 Episodes @ 30s",
+        previewImage: "https://images.unsplash.com/photo-1518135714426-c18f5ffb6f4d?auto=format&fit=crop&w=1200&q=80",
+        badge: "Kinetic Lab"
+      }
+    ];
+
+    // Main App
+    function App() {
+      const [activeTab, setActiveTab] = useState('all');
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [viewfinderActive, setViewfinderActive] = useState(false);
+      const [expandedPrinciple, setExpandedPrinciple] = useState(0);
+      const [timecode, setTimecode] = useState("00:00:00:00");
+      const [copiedBrief, setCopiedBrief] = useState(false);
+      const [selectedEntity, setSelectedEntity] = useState(ECOSYSTEM_ENTITIES[0]);
+
+      // Booking Form State
+      const [bookingForm, setBookingForm] = useState({
+        engagement: "Narrative Co-Production / Directing",
+        budget: "₹5,00,000 - ₹25,00,000 (Slate Tier)",
+        timeline: "Within 60 - 90 Days",
+        location: "Kerala (Kollam / Kochi)",
+        deliverables: ["2.39:1 DCP Master", "4K Color Grade", "Behind the Scenes Reel"],
+        clientName: "",
+        clientEmail: "",
+        clientPhone: "",
+        projectBrief: ""
+      });
+
+      // 24fps Kerala / IST Timecode Loop
+      useEffect(() => {
+        const timer = setInterval(() => {
+          const now = new Date();
+          const istHours = String((now.getUTCHours() + 5 + Math.floor((now.getUTCMinutes() + 30) / 60)) % 24).padStart(2, '0');
+          const istMinutes = String((now.getUTCMinutes() + 30) % 60).padStart(2, '0');
+          const istSeconds = String(now.getUTCSeconds()).padStart(2, '0');
+          const frames = String(Math.floor((now.getUTCMilliseconds() / 1000) * 24)).padStart(2, '0');
+          setTimecode(`${istHours}:${istMinutes}:${istSeconds}:${frames}`);
+        }, 41);
+
+        return () => clearInterval(timer);
+      }, []);
+
+      const filteredProjects = useMemo(() => {
+        if (activeTab === 'all') return PROJECTS_DATA;
+        return PROJECTS_DATA.filter(p => p.category === activeTab);
+      }, [activeTab]);
+
+      const toggleDeliverable = (item) => {
+        setBookingForm(prev => {
+          const exists = prev.deliverables.includes(item);
+          return {
+            ...prev,
+            deliverables: exists 
+              ? prev.deliverables.filter(d => d !== item) 
+              : [...prev.deliverables, item]
+          };
+        });
+      };
+
+      const generateBriefSummary = () => {
+        return `[ANF PRODUCTION INTAKE BRIEF]
+-----------------------------------------
+Client / Studio: ${bookingForm.clientName || 'Undisclosed'}
+Contact: ${bookingForm.clientEmail || 'N/A'} | ${bookingForm.clientPhone || 'N/A'}
+Engagement Model: ${bookingForm.engagement}
+Investment Tier: ${bookingForm.budget}
+Production Location: ${bookingForm.location}
+Target Timeline: ${bookingForm.timeline}
+Deliverable Scope: ${bookingForm.deliverables.join(', ')}
+Project Vision: ${bookingForm.projectBrief || 'None specified.'}
+-----------------------------------------
+Dispatched via Akshay Noushar Films (UDYAM-KL-06-0031882)`;
+      };
+
+      const handleCopyBrief = () => {
+        const text = generateBriefSummary();
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setCopiedBrief(true);
+        setTimeout(() => setCopiedBrief(false), 2400);
+      };
+
+      const handleWhatsAppDispatch = () => {
+        const summary = encodeURIComponent(generateBriefSummary());
+        window.open(`https://wa.me/${LEGAL_DATA.whatsapp}?text=${summary}`, '_blank');
+      };
+
+      return (
+        <div className="min-h-screen bg-[#0b0b0c] text-neutral-100 selection:bg-[#F25623] selection:text-white font-sans antialiased relative overflow-x-hidden">
+          
+          {/* 2.39:1 Cinema Viewfinder Overlay */}
+          {viewfinderActive && (
+            <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-between">
+              <div className="w-full h-[12vh] bg-black border-b border-neutral-800 flex items-center justify-between px-6 md:px-12 text-neutral-400 font-mono text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+                  <span className="text-white font-bold tracking-wider">REC</span>
+                  <span className="text-[#F25623]">2.39:1 ANAMORPHIC SCOPE</span>
+                </div>
+                <div className="tracking-widest">{timecode}</div>
+                <div className="text-neutral-500 hidden sm:block">ISO 800 · 5600K · 1/48s · T2.0</div>
+              </div>
+
+              <div className="w-full flex-1 relative flex items-center justify-center">
+                <div className="w-12 h-12 border border-[#F25623]/40 rounded-full flex items-center justify-center">
+                  <div className="w-2 h-2 bg-[#F25623] rounded-full" />
+                </div>
+                <div className="absolute inset-x-12 top-1/3 border-t border-white/5" />
+                <div className="absolute inset-x-12 bottom-1/3 border-b border-white/5" />
+                <div className="absolute inset-y-8 left-1/3 border-l border-white/5" />
+                <div className="absolute inset-y-8 right-1/3 border-r border-white/5" />
+              </div>
+
+              <div className="w-full h-[12vh] bg-black border-t border-neutral-800 flex items-center justify-between px-6 md:px-12 text-neutral-400 font-mono text-xs">
+                <div>AKSHAY NOUSHAR FILMS · DCI 4K</div>
+                <div className="text-[#F25623] font-semibold">VIEWFINDER OVERLAY ACTIVE</div>
+                <div>LUT: ANF DAVINCI 10-BIT 01</div>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Bar */}
+          <nav className="sticky top-0 z-40 bg-[#0b0b0c]/90 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-3.5 transition-all">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              
+              <a href="#hero" className="flex items-center gap-3.5 group">
+                <div className="bg-white px-3 py-1.5 rounded border border-neutral-700 shadow-md group-hover:border-[#F25623] transition-colors flex items-center justify-center min-h-[46px] min-w-[130px]">
+                  <OriginalLogo id="anf" className="h-8 w-auto" alt="Akshay Noushar Films" />
+                </div>
+                <div className="hidden sm:block">
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-xs tracking-[0.2em] uppercase text-white group-hover:text-[#F25623] transition-colors">
+                      Akshay Noushar Films
+                    </span>
+                    <span className="text-[9px] bg-[#F25623]/20 text-[#F25623] px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">
+                      OFFICIAL
+                    </span>
+                  </div>
+                  <div className="text-[8.5px] tracking-[0.25em] text-neutral-400 uppercase font-medium">
+                    Cinema · Direction · Systems
+                  </div>
+                </div>
+              </a>
+
+              <div className="hidden lg:flex items-center gap-7 text-xs font-medium tracking-widest uppercase text-neutral-400">
+                <a href="#work" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span className="text-[#F25623] font-mono">01</span> Archive
+                </a>
+                <a href="#matrix" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span className="text-[#F25623] font-mono">02</span> Logos &amp; Identity
+                </a>
+                <a href="#doctrine" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span className="text-[#F25623] font-mono">03</span> Doctrine
+                </a>
+                <a href="#ecosystem" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span className="text-[#F25623] font-mono">04</span> Ecosystem
+                </a>
+                <a href="#booking" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span className="text-[#F25623] font-mono">05</span> Booking
+                </a>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex flex-col items-end px-3 py-1 bg-neutral-900/80 rounded border border-white/5 font-mono text-[10px]">
+                  <div className="text-neutral-400 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>KOLLAM, KL</span>
+                  </div>
+                  <div className="text-[#F25623] font-semibold">{timecode}</div>
+                </div>
+
+                <button
+                  onClick={() => setViewfinderActive(!viewfinderActive)}
+                  title="Toggle 2.39:1 Cinema Viewfinder Overlay"
+                  className={`px-3 py-1.5 rounded border text-xs font-mono flex items-center gap-1.5 transition-all ${
+                    viewfinderActive 
+                      ? 'bg-[#F25623] text-black border-[#F25623] font-bold' 
+                      : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                  }`}
+                >
+                  <span>2.39:1 HUD</span>
+                </button>
+
+                <a 
+                  href="#booking"
+                  className="px-4 py-2 bg-gradient-to-r from-[#F25623] to-[#d94412] hover:from-[#ff6b3d] hover:to-[#F25623] text-white text-xs font-semibold tracking-wider uppercase rounded-md shadow-lg shadow-[#F25623]/20 transition-all"
+                >
+                  Initiate
+                </a>
+              </div>
+
+            </div>
+          </nav>
+
+          {/* Hero Section */}
+          <section id="hero" className="relative min-h-[90vh] flex items-center justify-center px-4 md:px-8 py-20 overflow-hidden bg-grain">
+            <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[#F25623]/10 rounded-full blur-[140px] pointer-events-none" />
+            <div className="absolute bottom-10 -right-32 w-[30rem] h-[30rem] bg-red-950/20 rounded-full blur-[160px] pointer-events-none" />
+
+            <div className="max-w-5xl mx-auto text-center relative z-10 flex flex-col items-center">
+              
+              <div className="mb-6 p-4 rounded-xl bg-white border border-neutral-300 shadow-2xl flex items-center justify-center max-w-sm sm:max-w-md">
+                <OriginalLogo id="anf" className="h-20 w-auto" alt="Akshay Noushar Films" />
+              </div>
+
+              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-xs font-mono uppercase tracking-widest mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#F25623]" />
+                <span>OBSCURA VISION · THE VIEWFINDER ARCHIVE</span>
+                <span className="text-neutral-500">|</span>
+                <span className="text-neutral-400">EST. 2019</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight text-white leading-[0.95] max-w-4xl">
+                Ideas. Images. <br />
+                <span className="bg-gradient-to-r from-white via-neutral-200 to-[#F25623] bg-clip-text text-transparent">
+                  Stories.
+                </span>
+              </h1>
+
+              <p className="mt-8 text-lg sm:text-xl md:text-2xl text-neutral-300 font-light max-w-2xl leading-relaxed italic font-serif">
+                &#34;I do not simply capture what happened. I build the frame through which it will be remembered.&#34;
+              </p>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                <span className="px-3 py-1 rounded bg-neutral-900 border border-neutral-800">Visual Storyteller</span>
+                <span className="text-[#F25623]">✦</span>
+                <span className="px-3 py-1 rounded bg-neutral-900 border border-neutral-800">Creative Director</span>
+                <span className="text-[#F25623]">✦</span>
+                <span className="px-3 py-1 rounded bg-neutral-900 border border-neutral-800">Filmmaker</span>
+                <span className="text-[#F25623]">✦</span>
+                <span className="px-3 py-1 rounded bg-neutral-900 border border-neutral-800">Media Strategist</span>
+              </div>
+
+              <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                <a 
+                  href="#booking" 
+                  className="w-full sm:w-auto px-8 py-3.5 bg-[#F25623] hover:bg-[#ff6534] text-white text-xs font-bold uppercase tracking-[0.2em] rounded-md transition-all shadow-xl shadow-[#F25623]/25 flex items-center justify-center gap-2 group"
+                >
+                  <span>Initiate Production Brief</span>
+                  <span>→</span>
+                </a>
+
+                <a 
+                  href="#matrix" 
+                  className="w-full sm:w-auto px-8 py-3.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 text-xs font-bold uppercase tracking-[0.2em] rounded-md transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Explore Official Logos</span>
+                </a>
+              </div>
+
+              {/* Directorial Signature Stamp */}
+              <div className="mt-14 pt-8 border-t border-white/5 flex flex-col items-center">
+                <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-neutral-500 mb-2">
+                  Directorial Signature Stamp
+                </div>
+                <svg viewBox="0 0 300 90" className="w-48 h-14 text-[#F25623]/80 stroke-current fill-none stroke-[2.2] stroke-linecap-round stroke-linejoin-round">
+                  <path d="M 40,75 L 70,30 L 85,75 M 50,60 L 95,58" />
+                  <path d="M 85,60 C 95,50 100,35 110,48 C 118,58 122,70 128,52 C 132,40 138,55 145,50 C 152,45 158,60 165,48 C 172,36 178,65 182,50" />
+                  <path d="M 180,35 L 175,70 C 178,74 190,65 200,60" />
+                  <path d="M 30,85 L 260,35" strokeWidth="1.8" />
+                </svg>
+                <span className="text-[11px] font-serif tracking-wider text-neutral-400 mt-1">Akshay Noushar</span>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Brand Identity & Official Logo Matrix */}
+          <section id="matrix" className="py-24 px-4 md:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#F25623] tracking-widest uppercase mb-2">
+                  <span>✦ Verified Brand Ecosystem &amp; Registered Marks</span>
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                  Official Logos &amp; Insignias.
+                </h2>
+              </div>
+              <div className="text-xs font-mono text-neutral-400 max-w-md">
+                Select an entity to review its unedited high-resolution mark, registered corporate mandate, and booking channel.
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mb-8">
+              {ECOSYSTEM_ENTITIES.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedEntity(item)}
+                  className={`px-4 py-2.5 rounded-md text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 border ${
+                    selectedEntity.id === item.id
+                      ? 'bg-neutral-100 text-black border-white font-bold shadow-lg'
+                      : 'bg-neutral-900/80 text-neutral-400 border-neutral-800 hover:text-white'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.accent }} />
+                  <span>{item.name}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="p-8 md:p-12 rounded-xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-[#121215] border border-white/10 shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5 flex flex-col items-center justify-center p-8 rounded-lg bg-[#070708] border border-neutral-800 relative min-h-[260px] shadow-inner">
+                <div className="absolute top-3 left-3 text-[9px] font-mono uppercase tracking-widest text-neutral-500">
+                  OFFICIAL ORIGINAL ASSET
+                </div>
+                <div className="my-auto max-h-36 max-w-full flex items-center justify-center">
+                  <OriginalLogo id={selectedEntity.id} className="max-h-28 max-w-full" alt={selectedEntity.name} />
+                </div>
+                <div className="absolute bottom-3 right-3 text-[9px] font-mono text-neutral-600">
+                  {selectedEntity.nic}
+                </div>
+              </div>
+
+              <div className="lg:col-span-7 space-y-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-[#F25623]/20 text-[#F25623] border border-[#F25623]/30 uppercase font-bold tracking-widest">
+                    {selectedEntity.tag}
+                  </span>
+                  <span className="text-xs font-mono text-neutral-500">
+                    {selectedEntity.nic}
+                  </span>
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-black uppercase text-white tracking-wide">
+                  {selectedEntity.name}
+                </h3>
+
+                <div className="text-sm font-mono text-neutral-300">
+                  {selectedEntity.role}
+                </div>
+
+                <p className="text-sm text-neutral-300 leading-relaxed font-light">
+                  {selectedEntity.desc}
+                </p>
+
+                <div className="p-3 rounded bg-neutral-900/70 border border-white/5 font-mono text-xs text-[#F25623]">
+                  ✦ {selectedEntity.highlight}
+                </div>
+
+                <div className="pt-4 flex flex-wrap items-center gap-4">
+                  <a 
+                    href="#booking"
+                    onClick={() => setBookingForm(prev => ({ ...prev, engagement: selectedEntity.name }))}
+                    className="px-6 py-2.5 bg-[#F25623] hover:bg-[#ff6534] text-white font-mono text-xs uppercase tracking-wider font-bold rounded transition-colors flex items-center gap-2"
+                  >
+                    <span>Book Under {selectedEntity.name}</span>
+                    <span>→</span>
+                  </a>
+
+                  {selectedEntity.id === 'flickus' && (
+                    <a 
+                      href="https://flickus.in" 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs uppercase tracking-wider rounded border border-neutral-700 transition-colors"
+                    >
+                      Visit flickus.in ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Selected Work Archive */}
+          <section id="work" className="py-24 px-4 md:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#F25623] tracking-widest uppercase mb-2">
+                  <span>✦ Selected Filmography &amp; Production Vault</span>
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                  The Archive.
+                </h2>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-xs font-mono uppercase">
+                {[
+                  { id: 'all', label: 'All Works' },
+                  { id: 'cinema', label: '2.39:1 Scope / Cinema' },
+                  { id: 'commercial', label: 'Commercial Ads' },
+                  { id: 'reels', label: 'Kinetic 9:16' },
+                  { id: 'stills', label: 'Editorial Stills' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-3 py-1.5 rounded transition-all ${
+                      activeTab === tab.id 
+                        ? 'bg-[#F25623] text-white font-bold' 
+                        : 'bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project) => (
+                <div 
+                  key={project.id}
+                  onClick={() => setSelectedProject(project)}
+                  className="group cursor-pointer rounded-lg bg-neutral-900/60 border border-white/5 hover:border-[#F25623]/60 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+                >
+                  <div className="relative aspect-video w-full overflow-hidden bg-neutral-950">
+                    <img 
+                      src={project.previewImage} 
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent" />
+                    
+                    <div className="absolute top-3 left-3 flex items-center gap-2">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 backdrop-blur border border-white/10 text-white">
+                        {project.aspect}
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F25623]/90 text-white font-bold">
+                        {project.badge}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 text-[10px] font-mono text-neutral-300">
+                      {project.year} · {project.runtime}
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="text-[11px] font-mono uppercase tracking-wider text-[#F25623] mb-1">
+                        {project.entity}
+                      </div>
+                      <h3 className="text-xl font-bold uppercase tracking-wide text-white group-hover:text-[#F25623] transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="mt-2 text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                        {project.logline}
+                      </p>
+                    </div>
+
+                    <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-neutral-400">
+                      <span>{project.role}</span>
+                      <span className="text-white group-hover:text-[#F25623]">Specs →</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Project Lightbox Modal */}
+          {selectedProject && (
+            <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8 overflow-y-auto">
+              <div className="max-w-4xl w-full bg-[#121214] border border-neutral-800 rounded-lg overflow-hidden shadow-2xl relative my-auto">
+                <div className="p-6 border-b border-neutral-800 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#F25623] block">
+                      {selectedProject.entity} · Project Archive
+                    </span>
+                    <h3 className="text-2xl md:text-3xl font-black uppercase text-white mt-0.5">
+                      {selectedProject.title}
+                    </h3>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedProject(null)}
+                    className="w-9 h-9 rounded-full bg-neutral-900 border border-neutral-700 flex items-center justify-center text-neutral-300 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="relative aspect-video w-full bg-black flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={selectedProject.previewImage} 
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover opacity-85"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                  <div className="absolute text-center z-10 px-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 border border-[#F25623] text-white text-xs font-mono mb-2">
+                      ▶ Theatrical Master Ready
+                    </div>
+                    <div className="text-xs text-neutral-300 font-mono">
+                      Master Encoded in DCI 4K Scope · Rec.709
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 md:p-8 space-y-6">
+                  <div>
+                    <h4 className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-2">Narrative Premise &amp; Scope</h4>
+                    <p className="text-sm md:text-base text-neutral-200 leading-relaxed font-light">
+                      {selectedProject.logline}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-md bg-neutral-900/60 border border-neutral-800 text-xs font-mono">
+                    <div>
+                      <span className="text-neutral-500 block text-[10px]">ASPECT RATIO</span>
+                      <span className="text-white font-medium">{selectedProject.aspect}</span>
+                    </div>
+                    <div>
+                      <span className="text-neutral-500 block text-[10px]">CAMERA &amp; GLASS</span>
+                      <span className="text-white font-medium">{selectedProject.camera}</span>
+                    </div>
+                    <div>
+                      <span className="text-neutral-500 block text-[10px]">COLOR PROFILE</span>
+                      <span className="text-white font-medium">{selectedProject.color}</span>
+                    </div>
+                    <div>
+                      <span className="text-neutral-500 block text-[10px]">RUNTIME</span>
+                      <span className="text-white font-medium">{selectedProject.runtime}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-800">
+                    <span className="text-xs text-neutral-400 font-mono">
+                      Credited: <strong className="text-white">{selectedProject.role}</strong>
+                    </span>
+                    <a 
+                      href="#booking"
+                      onClick={() => setSelectedProject(null)}
+                      className="px-5 py-2.5 bg-[#F25623] hover:bg-[#ff6534] text-white text-xs font-bold uppercase tracking-wider rounded"
+                    >
+                      Commission Similar Project
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Viewfinder Archive Doctrines */}
+          <section id="doctrine" className="py-24 px-4 md:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div className="max-w-3xl mb-14">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#F25623] tracking-widest uppercase mb-2">
+                <span>✦ The Viewfinder Archive · Creative Doctrine 001</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                Principles of Akshay Noushar.
+              </h2>
+              <p className="mt-4 text-sm md:text-base text-neutral-400 leading-relaxed font-light">
+                These are not quotes. They are operating principles shaped through time, discipline, decision-making, and the journey of building work that belongs to a permanent system.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {DOCTRINE_PRINCIPLES.map((principle, index) => {
+                const isExpanded = expandedPrinciple === index;
+                return (
+                  <div 
+                    key={principle.num}
+                    onClick={() => setExpandedPrinciple(isExpanded ? null : index)}
+                    className={`p-6 rounded-lg cursor-pointer transition-all border ${
+                      isExpanded 
+                        ? 'bg-neutral-900 border-[#F25623]/80 shadow-lg shadow-[#F25623]/10' 
+                        : 'bg-neutral-950/60 border-white/5 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-sm text-[#F25623] font-bold">
+                          {principle.num}
+                        </span>
+                        <h3 className="text-base md:text-lg font-bold text-white tracking-wide">
+                          {principle.title}
+                        </h3>
+                      </div>
+                      <span className="font-mono text-xs text-neutral-500">
+                        {isExpanded ? '−' : '+'}
+                      </span>
+                    </div>
+
+                    <div className="text-xs font-serif italic text-neutral-300 mt-2">
+                      &#34;{principle.subtitle}&#34;
+                    </div>
+
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-white/10 text-xs md:text-sm text-neutral-300 leading-relaxed font-light">
+                        {principle.meaning}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Ecosystem Seven Universes */}
+          <section id="ecosystem" className="py-24 px-4 md:px-8 max-w-7xl mx-auto border-t border-white/10">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <div className="inline-flex items-center gap-2 text-xs font-mono text-[#F25623] tracking-widest uppercase mb-2">
+                <span>✦ Parent Creative Vision: OBSCURA</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                One Vision. Seven Universes.
+              </h2>
+              <p className="mt-3 text-sm md:text-base text-neutral-400 font-light">
+                Distinct operational entities unified under the parent enterprise registration (UDYAM-KL-06-0031882) to protect artistic equity while driving commercial sustainability.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ECOSYSTEM_ENTITIES.map((entity, i) => (
+                <div 
+                  key={entity.id} 
+                  className={`p-6 rounded-lg bg-neutral-900/60 border border-white/5 hover:border-[#F25623]/50 transition-all flex flex-col justify-between ${
+                    i === 0 ? 'lg:col-span-2 bg-gradient-to-br from-neutral-900 to-[#141416] border-[#F25623]/40' : ''
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[10px] font-mono font-bold tracking-widest uppercase px-2 py-0.5 rounded bg-white/5 text-[#F25623] border border-[#F25623]/30">
+                        {entity.tag}
+                      </span>
+                      <span className="text-[10px] font-mono text-neutral-500">
+                        {entity.nic}
+                      </span>
+                    </div>
+
+                    <div className="py-4 px-4 rounded bg-black/80 border border-white/5 mb-4 flex items-center justify-center min-h-[110px]">
+                      <OriginalLogo id={entity.id} className="max-h-16 max-w-full" alt={entity.name} />
+                    </div>
+
+                    <h3 className="text-xl md:text-2xl font-black uppercase tracking-wide text-white">
+                      {entity.name}
+                    </h3>
+                    <div className="text-xs font-mono text-neutral-300 mt-1 mb-4">
+                      {entity.role}
+                    </div>
+                    <p className="text-xs md:text-sm text-neutral-400 leading-relaxed font-light">
+                      {entity.desc}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[#F25623]">
+                    <span>{entity.highlight}</span>
+                    <span>→</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 p-4 rounded bg-neutral-950 border border-neutral-800 text-[11px] font-mono text-neutral-400 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <span>Govt. of India MSME Registered: <strong>{LEGAL_DATA.msme}</strong></span>
+              </div>
+              <div>
+                GST Regular Registration: <strong>{LEGAL_DATA.gst}</strong> (DayNight Media)
+              </div>
+              <div className="text-neutral-500">
+                Headquartered in Kollam, Kerala, India
+              </div>
+            </div>
+          </section>
+
+          {/* Interactive Booking Engine */}
+          <section id="booking" className="py-24 px-4 md:px-8 max-w-5xl mx-auto border-t border-white/10">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <div className="inline-flex items-center gap-2 text-xs font-mono text-[#F25623] tracking-widest uppercase mb-2">
+                <span>✦ Project Commissioning Engine</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
+                Initiate Production.
+              </h2>
+              <p className="mt-3 text-xs md:text-sm text-neutral-400 leading-relaxed font-light">
+                Configure your project scope below to automatically compile an official brief and dispatch via WhatsApp or Email.
+              </p>
+            </div>
+
+            <div className="p-6 md:p-10 rounded-xl bg-neutral-950 border border-neutral-800 shadow-2xl relative">
+              <div className="space-y-8">
+                
+                <div>
+                  <label className="text-xs font-mono uppercase tracking-widest text-[#F25623] block mb-3">
+                    Phase 01 · Select Engagement Model
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {[
+                      "Narrative Co-Production / Directing",
+                      "Commercial Ad Film Production",
+                      "Retained Creative Direction",
+                      "Architecture & Spatial Visuals",
+                      "Podcast & Studio Floor Booking",
+                      "Creative Tech / Web Strategy"
+                    ].map(type => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setBookingForm({ ...bookingForm, engagement: type })}
+                        className={`p-3 text-left rounded-md text-xs font-medium border transition-all ${
+                          bookingForm.engagement === type 
+                            ? 'bg-[#F25623]/15 text-[#F25623] border-[#F25623] font-bold' 
+                            : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-mono uppercase tracking-widest text-[#F25623] block mb-3">
+                    Phase 02 · Production Budget Tier
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {[
+                      "₹50,000 - ₹1,50,000 (Sprint)",
+                      "₹1,50,000 - ₹5,00,000 (Commercial)",
+                      "₹5,00,000 - ₹25,00,000 (Slate)",
+                      "₹25,00,000+ (Feature)"
+                    ].map(tier => (
+                      <button
+                        key={tier}
+                        type="button"
+                        onClick={() => setBookingForm({ ...bookingForm, budget: tier })}
+                        className={`p-3 text-left rounded-md text-xs font-mono border transition-all ${
+                          bookingForm.budget === tier 
+                            ? 'bg-white text-black border-white font-bold' 
+                            : 'bg-neutral-900 text-neutral-300 border-neutral-800 hover:border-neutral-700'
+                        }`}
+                      >
+                        {tier}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-xs font-mono uppercase tracking-widest text-neutral-400 block mb-2">
+                      Target Production Timeline
+                    </label>
+                    <select 
+                      value={bookingForm.timeline}
+                      onChange={(e) => setBookingForm({ ...bookingForm, timeline: e.target.value })}
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white font-mono focus:border-[#F25623] outline-none"
+                    >
+                      <option>Immediate / Within 30 Days</option>
+                      <option>Within 60 - 90 Days</option>
+                      <option>Q3/Q4 2026 Production Slate</option>
+                      <option>Long-Term Development (2026-27)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-mono uppercase tracking-widest text-neutral-400 block mb-2">
+                      Primary Location / Shoot Territory
+                    </label>
+                    <select 
+                      value={bookingForm.location}
+                      onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white font-mono focus:border-[#F25623] outline-none"
+                    >
+                      <option>Kerala (Kollam / Kochi)</option>
+                      <option>Bengaluru / Chennai (South Hub)</option>
+                      <option>Mumbai / Pan-India Travel</option>
+                      <option>International Location</option>
+                      <option>Pure Post-Production / Remote</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-mono uppercase tracking-widest text-neutral-400 block mb-2">
+                    Deliverables Scope Check
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {[
+                      "2.39:1 DCP Master",
+                      "4K Color Grade",
+                      "TVC 60s/30s Cuts",
+                      "9:16 Social Suite",
+                      "High-Res Stills Kit",
+                      "Behind the Scenes Reel"
+                    ].map(item => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => toggleDeliverable(item)}
+                        className={`px-3 py-2 rounded text-xs font-mono text-left border flex items-center justify-between transition-colors ${
+                          bookingForm.deliverables.includes(item)
+                            ? 'bg-neutral-800 text-white border-[#F25623]'
+                            : 'bg-neutral-900/60 text-neutral-400 border-neutral-800'
+                        }`}
+                      >
+                        <span>{item}</span>
+                        {bookingForm.deliverables.includes(item) && (
+                          <span className="text-[#F25623] font-bold">✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-neutral-800">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input 
+                      type="text" 
+                      placeholder="Your Name / Studio"
+                      value={bookingForm.clientName}
+                      onChange={(e) => setBookingForm({ ...bookingForm, clientName: e.target.value })}
+                      className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:border-[#F25623] outline-none"
+                    />
+                    <input 
+                      type="email" 
+                      placeholder="Email Address"
+                      value={bookingForm.clientEmail}
+                      onChange={(e) => setBookingForm({ ...bookingForm, clientEmail: e.target.value })}
+                      className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:border-[#F25623] outline-none"
+                    />
+                    <input 
+                      type="tel" 
+                      placeholder="WhatsApp / Phone"
+                      value={bookingForm.clientPhone}
+                      onChange={(e) => setBookingForm({ ...bookingForm, clientPhone: e.target.value })}
+                      className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white focus:border-[#F25623] outline-none"
+                    />
+                  </div>
+
+                  <textarea 
+                    rows={3}
+                    placeholder="Brief project vision, reference tone, or requirements..."
+                    value={bookingForm.projectBrief}
+                    onChange={(e) => setBookingForm({ ...bookingForm, projectBrief: e.target.value })}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded p-3 text-xs text-white focus:border-[#F25623] outline-none"
+                  />
+                </div>
+
+                <div className="p-4 rounded bg-neutral-900/80 border border-neutral-800 font-mono text-[11px] text-neutral-300">
+                  <div className="flex items-center justify-between text-neutral-500 mb-2">
+                    <span>COMPILED PRODUCTION BRIEF</span>
+                    <span className="text-[#F25623]">READY FOR DISPATCH</span>
+                  </div>
+                  <div className="whitespace-pre-line text-neutral-200">
+                    {generateBriefSummary()}
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleWhatsAppDispatch}
+                    className="w-full sm:flex-1 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-black font-bold text-xs uppercase tracking-wider rounded transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>Dispatch via WhatsApp Directly</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyBrief}
+                    className="w-full sm:w-auto px-5 py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs uppercase tracking-wider rounded border border-neutral-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {copiedBrief ? <span>✓ Brief Copied!</span> : <span>Copy Raw Brief</span>}
+                  </button>
+
+                  <a
+                    href={`mailto:${LEGAL_DATA.email}?subject=Production%20Inquiry%20-%20${bookingForm.engagement}&body=${encodeURIComponent(generateBriefSummary())}`}
+                    className="w-full sm:w-auto px-5 py-3 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 font-mono text-xs uppercase tracking-wider rounded border border-neutral-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>Send Email</span>
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          {/* Master Footer */}
+          <footer className="border-t border-white/10 bg-[#070708] py-16 px-4 md:px-8 text-neutral-400">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start justify-between gap-12">
+              
+              <div className="max-w-md space-y-4">
+                <div className="bg-white p-3 rounded-lg border border-neutral-700 inline-block shadow-md">
+                  <OriginalLogo id="anf" className="h-10 w-auto" alt="Akshay Noushar Films" />
+                </div>
+                <p className="text-xs leading-relaxed text-neutral-400">
+                  The flagship cinematic banner of Akshay Noushar. Dedicated to auteur-driven motion pictures, commercial productions, and modular creative technology.
+                </p>
+                <div className="text-[11px] font-mono text-neutral-500 space-y-1 pt-2">
+                  <div>Govt. MSME: {LEGAL_DATA.msme}</div>
+                  <div>GSTIN: {LEGAL_DATA.gst} (DayNight Media)</div>
+                  <div>Operating out of: {LEGAL_DATA.address}</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8 text-xs font-mono">
+                <div>
+                  <div className="text-white uppercase tracking-widest text-[11px] mb-3 font-bold">
+                    Ecosystem
+                  </div>
+                  <ul className="space-y-2 text-neutral-400">
+                    <li><a href="#matrix" className="hover:text-[#F25623]">ANF Originals</a></li>
+                    <li><a href="#matrix" className="hover:text-[#F25623]">OBSCURA Viewfinder</a></li>
+                    <li><a href="#matrix" className="hover:text-[#F25623]">DayNight Media (DNM)</a></li>
+                    <li><a href="https://flickus.in" target="_blank" rel="noreferrer" className="hover:text-[#F25623]">FlickUs Creatives</a></li>
+                    <li><a href="#matrix" className="hover:text-[#F25623]">Flicker Frame Films</a></li>
+                    <li><a href="#matrix" className="hover:text-[#F25623]">Cinema Paradise</a></li>
+                    <li><a href="#matrix" className="hover:text-[#F25623]">Eleven Story</a></li>
+                  </ul>
+                </div>
+
+                <div>
+                  <div className="text-white uppercase tracking-widest text-[11px] mb-3 font-bold">
+                    Channels
+                  </div>
+                  <ul className="space-y-2 text-neutral-400">
+                    <li>
+                      <a href="https://www.instagram.com/akshaynoushar_films/" target="_blank" rel="noreferrer" className="hover:text-[#F25623]">
+                        @akshaynoushar_films
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.instagram.com/daynightmedia.co?hl=el" target="_blank" rel="noreferrer" className="hover:text-[#F25623]">
+                        @daynightmedia.co
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://www.instagram.com/flicker_frame_films/" target="_blank" rel="noreferrer" className="hover:text-[#F25623]">
+                        @flicker_frame_films
+                      </a>
+                    </li>
+                    <li>
+                      <a href="https://flickus.in/" target="_blank" rel="noreferrer" className="hover:text-[#F25623]">
+                        flickus.in
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-white uppercase tracking-widest text-[11px] font-bold">
+                  Direct Production Line
+                </div>
+                <div className="text-sm font-mono text-[#F25623] font-bold">
+                  {LEGAL_DATA.email}
+                </div>
+                <div className="text-xs font-mono text-neutral-300">
+                  {LEGAL_DATA.phone}
+                </div>
+                <div className="pt-2">
+                  <a 
+                    href="#booking"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 rounded text-xs font-mono uppercase tracking-wider"
+                  >
+                    <span>Book Calibration →</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-neutral-500 gap-4">
+              <div>
+                © 2019 - 2026 Akshay Noushar Films (ANF). All Rights Reserved.
+              </div>
+              <div>
+                Built from the final frame · Kollam, Kerala
+              </div>
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
